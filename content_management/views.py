@@ -306,7 +306,7 @@ class LibraryVersionViewSet(StandardDataView, viewsets.ModelViewSet):
         metaName = MetadataType.objects.get(id=metadata_type_id).name
         # Create Changelog entry
         description = f"Added metadata type '{metaName}' to library version {version.version_number}"
-        Changelog.objects.create(library_version_id=pk, change_description=description)
+        Changelog.objects.create(library_version=version, change_description=description)
 
         print(version.metadata_types )
         return build_response(LibraryVersionSerializer(version).data)
@@ -328,7 +328,7 @@ class LibraryVersionViewSet(StandardDataView, viewsets.ModelViewSet):
         )
         metaName = MetadataType.objects.get(id=metadata_type_id).name
         description = f"Removed metadata type '{metaName}' to library version {version.version_number}"
-        Changelog.objects.create(library_version_id=pk, change_description=description)
+        Changelog.objects.create(library_version = version, change_description=description)
 
         print(version.metadata_types)
         return build_response(LibraryVersionSerializer(version).data)
@@ -604,21 +604,23 @@ class LibraryFolderViewSet(StandardDataView, viewsets.ModelViewSet):
             to_move.parent = destination
             to_move.save()
             update_child_version(to_move, destination.version)
-            folderName = LibraryFolder.objects.get(id=int(folder_id)).folder_name
-            description = f"Moved Folder {folderName}  to folder {destination.folder_name}"
-            Changelog.objects.create(library_version=destination.version_id, change_description=description)
+            folderName =to_move.folder_name
+            description = f"Moved Folder {folderName}  to Folder {destination.folder_name}"
+            Changelog.objects.create(library_version=destination.version, change_description=description)
 
             return build_response()
 
         if version_id is not None:
             destination = LibraryVersion.objects.get(id=int(version_id))
             to_move = LibraryFolder.objects.get(id=pk)
+            to_move_ver = to_move.version
             to_move.parent = None
             to_move.save()
             update_child_version(to_move, destination)
 
-            description = f"Moved Folder {to_move.folder_name}  to Folder {destination.folder_name}"
-            Changelog.objects.create(library_version=destination.version_id, change_description=description)
+            description = f"Moved Folder {to_move.folder_name} from Library  {to_move_ver.library_name} {to_move_ver.version_number} to Library {destination.library_name} {destination.version_number}"
+            Changelog.objects.create(library_version=destination, change_description=description)
+            Changelog.objects.create(library_version=to_move_ver, change_description=description)
             return build_response()
 
         return build_response(
@@ -654,14 +656,16 @@ class LibraryFolderViewSet(StandardDataView, viewsets.ModelViewSet):
             destination = LibraryFolder.objects.get(id=int(folder_id))
             to_move = LibraryFolder.objects.get(id=pk)
             copy_children_and_update(to_move, destination.version, destination)
-            description = f"Moved content {content.title} (ID: {content.id}) from folder {folder.folder_name} (ID: {folder.id})"
-            Changelog.objects.create(library_version=folder.version, change_description=description)
+            description = f"Copied folder {to_move.folder_name} to folder {destination.folder_name}"
+            Changelog.objects.create(library_version=destination.version, change_description=description)
             return build_response()
 
         if version_id is not None:
             destination = LibraryVersion.objects.get(id=int(version_id))
             to_move = LibraryFolder.objects.get(id=pk)
             copy_children_and_update(to_move, destination, None)
+            description = f"Copied folder {to_move.folder_name} to LibraryVersion {destination.library_name} {destination.version_number}"
+            Changelog.objects.create(library_version=destination, change_description=description)
             return build_response()
 
         return build_response(
