@@ -358,13 +358,13 @@ class LibraryVersionViewSet(StandardDataView, viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=True)
     def addmodule(self, request, pk=None):
-        print("REACHED")
+        
                 
         logger = logging.getLogger("mylogger")
         logger.info("Whatever to log")
         
         if pk is None:
-            print("No PK")
+            
             return build_response(
                 status=status.HTTP_400_BAD_REQUEST,
                 success=False,
@@ -372,7 +372,7 @@ class LibraryVersionViewSet(StandardDataView, viewsets.ModelViewSet):
             )
         library_module_id = request.data.get("library_module_id", None)
         if library_module_id is None:
-            print("No ID")
+            
             return build_response(
                 status=status.HTTP_400_BAD_REQUEST,
                 success=False,
@@ -525,7 +525,7 @@ class LibraryFolderViewSet(StandardDataView, viewsets.ModelViewSet):
     
     @action(methods=['post'], detail=True)
     def addcontent(self, request, pk=None):
-        print("yaya")
+        
         if pk is None:
             return build_response(
                 status=status.HTTP_400_BAD_REQUEST,
@@ -622,7 +622,7 @@ class LibraryFolderViewSet(StandardDataView, viewsets.ModelViewSet):
             Changelog.objects.create(library_version=destination, change_description=description)
             Changelog.objects.create(library_version=to_move_ver, change_description=description)
             return build_response()
-
+        
         return build_response(
             status=status.HTTP_400_BAD_REQUEST,
             success=False,
