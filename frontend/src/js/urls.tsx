@@ -15,6 +15,7 @@ function url_with_params(urlstr: string, params:[string, any][]=[]) {
 
 function get_filters_arr(page?: number, size?: number, filters?: content_filters, exclude_if_in_version?: LibraryVersion): [string, any][] {
     const content_filter = filters || {}
+    console.log(content_filter)
     const {
         title, display_title, years, filename, copyright_notes, active, metadata, sort, file_sizes, reviewed_on, duplicatable
     } = content_filter
@@ -43,7 +44,10 @@ function get_filters_arr(page?: number, size?: number, filters?: content_filters
     if (!isUndefined(sort)) filters_arr.push(["sort", sort])
     if (!isUndefined(duplicatable)) filters_arr.push(["duplicatable", duplicatable])
     if (!isUndefined(exclude_if_in_version)) filters_arr.push(["exclude_in_version", exclude_if_in_version.id])
-    return filters_arr
+    
+
+    console.log(filters_arr)
+  return filters_arr
 }
 
 const APP_URLS = {
