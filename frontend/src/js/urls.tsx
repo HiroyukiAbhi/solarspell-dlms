@@ -49,6 +49,9 @@ function get_filters_arr(page?: number, size?: number, filters?: content_filters
     console.log(filters_arr)
   return filters_arr
 }
+function createNameContentTuples(contentArr: string[]): [string, any][] {
+    return contentArr.map(content => ["content_names", content.replace(/\.pdf$/, '')]);
+}
 
 const APP_URLS = {
     API: url_with_params(api_path),
@@ -58,6 +61,7 @@ const APP_URLS = {
         url_with_params(`${api_path}/contents/`, get_filters_arr(page, size, filters, exclude_if_in_version)),
     CONTENT_ITEM: (id: number) => url_with_params(`${api_path}/contents/${id}/`),
     CONTENT_BULK: url_with_params(`${api_path}/content_bulk_add/`),
+    CONTENT_DOWNLOAD_SELECTED: (content_arr : string[]) => url_with_params(`${api_path}/contents/get_spreadsheet_params/`, createNameContentTuples(content_arr)),
     CONTENT_BULK_DOWNLOAD: (filters?: content_filters) =>
         url_with_params(`${api_path}/contents/get_spreadsheet/`, get_filters_arr(undefined, undefined, filters)),
     CONTENT_FOLDER: url_with_params("media/contents/"),
