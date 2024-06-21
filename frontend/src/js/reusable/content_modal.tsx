@@ -54,6 +54,9 @@ interface ContentModalState {
   fields: WrappedFieldInfo<content_fields>;
 }
 
+const allowedEditable= (user:any) => {
+  return user && user.name === "Creator" || user.name === "Rights Holder" || user.name === "Subject";
+};
 //This modal should be used to add a new content item or edit an existing one.
 export default class ContentModal extends Component<
   ContentModalProps,
@@ -564,6 +567,8 @@ export default class ContentModal extends Component<
                           helperText={this.state.fields.metadata.reason}
                           {...params}
                           variant={"standard"}
+                          disabled = {!allowedEditable(metadata_type)}
+                          
                           label={metadata_type.name}
                           placeholder={metadata_type.name}
                         />
