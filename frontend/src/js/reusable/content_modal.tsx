@@ -568,7 +568,10 @@ export default class ContentModal extends Component<
                           {...params}
                           variant={"standard"}
                           disabled = {!allowedEditable(metadata_type)}
-                          
+                          InputProps={{
+                            ...params.InputProps,
+                            readOnly: !allowedEditable(metadata_type),
+                          }} 
                           label={metadata_type.name}
                           placeholder={metadata_type.name}
                         />

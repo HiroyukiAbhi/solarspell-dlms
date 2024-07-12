@@ -754,6 +754,36 @@ class LibraryFolderViewSet(StandardDataView, viewsets.ModelViewSet):
             error="No Destination Library or Folder supplied"
         )
 
+    def find_content_in_folders(folder, content_id):
+        """
+        Recursively search for specific content in the given folder and its subfolders.
+        """
+        found_in_folders = []
+
+        # Check if the content is in the current folder
+        if folder.library_content.filter(id=content_id).exists():
+            found_in_folders.append(folder.id)
+
+        # Recur through subfolders
+        subfolders = folder.subfolders.all()
+        for subfolder in subfolders:
+            found_in_folders.extend(find_content_in_folders(subfolder, content_id))
+
+        return found_in_folders
+
+    def search_content_view(request, folder_id, content_id):
+        """
+        View to search for specific content in the folder and its subfolders.
+        """
+        folder = get_object_or_404(LibraryFolder, id=folder_id)
+        found_in_folders = find_content_in_folders(folder, content_id)
+        response_data = {
+            'content_id': content_id,
+            'found_in_folders': found_in_folders,
+        }
+
+        return build_response(response_data)
+
 
 class LibraryModuleViewSet(StandardDataView, viewsets.ModelViewSet):
     queryset = LibraryModule.objects.all()
